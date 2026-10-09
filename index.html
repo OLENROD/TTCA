@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TTCA Tablero de la Oferta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&display=swap">
+<style>
+/* Layout: red masthead, sticky section nav, three stacked chapters mirroring the three slides; each closes with a conclusion box. */
+:root{
+  --bg:#F6F4F2; --surface:#FFFFFF; --tile:#EEF2F8; --ink:#1F2A3A; --muted:#5A6170; --line:#DDE1E7; --grid:#E8EBEF;
+  --red:#A51C1C; --red-soft:#FBE9E7; --navy:#1F3864; --navy-ink:#1F3864; --green:#2E7D4F; --amber:#B7791F; --grey:#A7B0BA;
+  --mast:#A51C1C; --mast-ink:#FFFFFF; --mast-sub:#F6D4D0;
+  --f:'Carlito', Calibri, 'Segoe UI', Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14171C; --surface:#1C2027; --tile:#222833; --ink:#E8EAEE; --muted:#A3AAB6; --line:#2E3440; --grid:#2A2F38;
+  --red:#E0605A; --red-soft:#3A2224; --navy:#7FA6E0; --navy-ink:#9DBCEB; --green:#5FBF8A; --amber:#E0A84A; --grey:#6B7480;
+  --mast:#8E1B18; --mast-ink:#FFFFFF; --mast-sub:#F2C6C2; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14171C; --surface:#1C2027; --tile:#222833; --ink:#E8EAEE; --muted:#A3AAB6; --line:#2E3440; --grid:#2A2F38;
+  --red:#E0605A; --red-soft:#3A2224; --navy:#7FA6E0; --navy-ink:#9DBCEB; --green:#5FBF8A; --amber:#E0A84A; --grey:#6B7480;
+  --mast:#8E1B18; --mast-ink:#FFFFFF; --mast-sub:#F2C6C2; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.45;margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:20px}
+header.mast{background:var(--mast);color:var(--mast-ink);padding-block:28px 22px}
+.kicker{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mast-sub)}
+h1{font-size:clamp(28px,4vw,44px);line-height:1.08;margin:.25em 0 .2em;text-wrap:balance}
+.mast p{margin:0;color:var(--mast-sub);font-size:17px}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:6px;flex-wrap:wrap;padding-block:10px}
+nav.tabs a{font-weight:700;color:var(--ink);text-decoration:none;padding:7px 14px;border-radius:999px;border:1px solid var(--line);font-size:15px}
+nav.tabs a:hover,nav.tabs a:focus-visible{border-color:var(--red);color:var(--red);outline:none}
+.hero{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-block:22px 8px}
+.tile{background:var(--tile);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.tile .l{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tile .v{font-size:34px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.tile .s{font-size:13.5px;color:var(--muted)}
+.tile.big .v{font-size:44px}
+.tile.solid{background:var(--navy);}
+.tile.solid .l,.tile.solid .s{color:#DCE4F2}.tile.solid .v{color:#FFFFFF}
+:root[data-theme="dark"] .tile.solid{background:#24375C}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tile.solid{background:#24375C}}
+.neg{color:var(--red)}.pos{color:var(--green)}.nav{color:var(--navy-ink)}.amb{color:var(--amber)}
+section.ch{padding-block:30px 10px;scroll-margin-top:64px}
+.chhead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:3px solid var(--red);padding-bottom:8px;margin-bottom:16px}
+.chnum{font-size:14px;font-weight:700;letter-spacing:.12em;color:var(--red)}
+h2{font-size:clamp(22px,2.8vw,30px);margin:0;line-height:1.15;text-wrap:balance}
+.lead{color:var(--muted);font-size:17px;margin:0 0 14px;max-width:80ch}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
+.card h3{font-size:16px;margin:0 0 2px}
+.card .sub{font-size:13px;color:var(--muted);margin:0 0 8px}
+.span2{grid-column:span 2}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{font-family:var(--f);fill:var(--muted);font-size:12px}
+svg .lbl{fill:var(--ink);font-weight:700}
+.concl{background:var(--red-soft);border-left:6px solid var(--red);border-radius:8px;padding:14px 18px;margin-block:16px 6px;font-size:17px;line-height:1.45}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:0 0 14px}
+.seg button{font:inherit;font-weight:700;font-size:14px;background:var(--surface);color:var(--ink);border:0;padding:7px 16px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--navy);color:#FFFFFF}
+.seg button:focus-visible{outline:2px solid var(--red);outline-offset:-2px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right}
+th:first-child,td:first-child{text-align:left}
+thead th{background:var(--red);color:#FFFFFF;font-weight:700}
+tr.tot td{font-weight:700;background:var(--red-soft)}
+td.hl,th.hl{outline:2px solid var(--navy);outline-offset:-2px}
+.tablebox{overflow-x:auto}
+.chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.chip{background:var(--tile);border-radius:8px;padding:9px 12px;font-size:14.5px}
+.offer{background:var(--navy);color:#FFFFFF;border-radius:10px;padding:18px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+:root[data-theme="dark"] .offer{background:#24375C}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .offer{background:#24375C}}
+.offer .amt{font-size:64px;font-weight:700;line-height:1}
+.offer p{margin:0;font-size:16px;color:#DCE4F2;max-width:40ch}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+footer{color:var(--muted);font-size:13px;padding-block:24px 36px}
+@media (max-width:980px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.grid3{grid-template-columns:1fr}.hero{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:720px){.grid2{grid-template-columns:1fr}.span2{grid-column:auto}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.chips{grid-template-columns:1fr}.tile .v{font-size:28px}.tile.big .v{font-size:34px}}
+@media (prefers-reduced-motion:no-preference){svg .mk{transition:opacity .2s}}
+</style>
+</head>
+<body>
+
+
+<header class="mast"><div class="wrap">
+  <div class="kicker">Análisis de adquisición · Confidencial</div>
+  <h1>TTC Auto Argentina · Fundamento de la oferta</h1>
+  <p>Toyota Panamericana (El Talar y Campana) · datos a agosto de 2026 · USD M salvo indicación</p>
+</div></header>
+<nav class="tabs" aria-label="Secciones"><div class="wrap">
+  <a href="#situacion">1 · Situación actual</a><a href="#inversion">2 · Inversión y turn-around</a><a href="#oferta">3 · Oferta</a>
+</div></nav>
+
+<main class="wrap">
+  <div class="hero">
+    <div class="tile solid big"><span class="l">Oferta por el 100%</span><span class="v">USD 1</span><span class="s">deuda financiera saneada por el vendedor</span></div>
+    <div class="tile big"><span class="l">Valor para el comprador</span><span class="v neg" id="h-val">−2.36</span><span class="s">NAV ajustado − indemnizaciones − litigios</span></div>
+    <div class="tile big"><span class="l">Inversión del comprador</span><span class="v neg" id="h-inv">−9.80</span><span class="s">incluye USD 6 M de stock recuperable</span></div>
+    <div class="tile big"><span class="l">Pérdida mensual actual del vendedor</span><span class="v neg">−0.16</span><span class="s">USD M por mes · 1.9 por año</span></div>
+  </div>
+
+  <section class="ch" id="situacion">
+    <div class="chhead"><span class="chnum">1 · SITUACIÓN ACTUAL</span><h2>Vende la mitad y pierde todos los meses</h2></div>
+    <p class="lead">Libros de gestión de abril de 2022 a agosto de 2026, en dólares al tipo de cambio oficial de cada mes, y balance auditado FY2026.</p>
+    <div class="kpis">
+      <div class="tile"><span class="l">Ventas abr–ago 26</span><span class="v neg">−46%</span><span class="s">vs. 2025 · mercado −13%</span></div>
+      <div class="tile"><span class="l">Ventas 12 meses</span><span class="v neg">39.6</span><span class="s">USD M · pico 75.3</span></div>
+      <div class="tile"><span class="l">Liquidez corriente</span><span class="v neg">0.98</span><span class="s">era 1.28 a mar-25</span></div>
+      <div class="tile"><span class="l">Pasivo / patrimonio</span><span class="v neg">4.76x</span><span class="s">era 1.85x a mar-25</span></div>
+      <div class="tile"><span class="l">NAV ajustado ago-26</span><span class="v nav">0.83</span><span class="s">USD M · 1.62 a mar-26</span></div>
+      <div class="tile"><span class="l">Patrimonio se agota</span><span class="v neg">jun-27</span><span class="s">si no cambia nada</span></div>
+    </div>
+    <div class="grid2">
+      <div class="card span2"><h3>Ventas y resultado neto, suma móvil de 12 meses</h3><p class="sub">USD M. Antes de dic-23 (cepo) las ventas en dólares están sobrestimadas.</p><div id="c-ttm"></div></div>
+      <div class="card"><h3>La tijera: margen bruto vs. gastos de estructura</h3><p class="sub">% de ventas por ejercicio. La diferencia es el margen operativo.</p><div id="c-tij"></div>
+        <div class="legend"><span><i style="background:var(--navy)"></i>Margen bruto</span><span><i style="background:var(--red)"></i>Gastos de estructura</span></div></div>
+      <div class="card"><h3>Patrimonio neto vs. deuda financiera</h3><p class="sub">USD M. Deuda = préstamos + leasing. Ago-25 y ago-26 evitan el pico de los cierres de marzo.</p><div id="c-ed"></div>
+        <div class="legend"><span><i style="background:var(--grey)"></i>Patrimonio neto</span><span><i style="background:var(--red)"></i>Deuda financiera</span></div></div>
+    </div>
+    <div class="grid3" style="margin-top:14px">
+      <div class="card"><h3>Liquidez corriente (x)</h3><p class="sub">Mensual · línea punteada = 1</p><div id="r-liq"></div></div>
+      <div class="card"><h3>Pasivo / patrimonio (x)</h3><p class="sub">Mensual</p><div id="r-end"></div></div>
+      <div class="card"><h3>Margen neto mensual (%)</h3><p class="sub">Diez meses seguidos en negativo</p><div id="r-mn"></div></div>
+    </div>
+    <div class="concl"><b>Conclusión.</b> TTCA vende la mitad que hace un año y pierde USD 0.16 M por mes, con liquidez por debajo de 1 y un pasivo de casi 5 veces el patrimonio. El valor ajustado cayó de 1.62 a 0.83 en cinco meses: sin una intervención, el patrimonio se agota a mediados de 2027.</div>
+  </section>
+
+  <section class="ch" id="inversion">
+    <div class="chhead"><span class="chnum">2 · INVERSIÓN Y TURN-AROUND</span><h2>Turn-around + compra: cuánto pone el comprador y cuándo lo recupera</h2></div>
+    <div class="seg" role="group" aria-label="Escenario">
+      <button type="button" id="sc-c" data-sc="Conservador" aria-pressed="false">Conservador</button>
+      <button type="button" id="sc-b" data-sc="Base" aria-pressed="true">Base</button>
+      <button type="button" id="sc-o" data-sc="Optimista" aria-pressed="false">Optimista</button>
+    </div>
+    <div class="kpis">
+      <div class="tile"><span class="l">Total a invertir</span><span class="v neg" id="k-tot"></span><span class="s">USD M</span></div>
+      <div class="tile"><span class="l">Stock 0km</span><span class="v nav">6.00</span><span class="s">recuperable · ~77 días</span></div>
+      <div class="tile"><span class="l">Capital hundido</span><span class="v neg" id="k-sunk"></span><span class="s" id="k-sunk-s"></span></div>
+      <div class="tile"><span class="l">Recupero hundido</span><span class="v" id="k-pb"></span><span class="s" id="k-pb-s"></span></div>
+      <div class="tile"><span class="l">TIR 5 años</span><span class="v" id="k-irr"></span><span class="s">WACC del modelo 20%</span></div>
+      <div class="tile"><span class="l">VAN al 20%</span><span class="v" id="k-npv"></span><span class="s">USD M, con valor terminal</span></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3>Capital del comprador por escenario</h3><p class="sub">USD M. El escenario elegido, resaltado.</p><div id="c-inv"></div>
+        <div class="legend"><span><i style="background:var(--navy)"></i>Stock 0km</span><span><i style="background:var(--red)"></i>Indemnizaciones 50 pers.</span><span><i style="background:var(--amber)"></i>Litigios</span><span><i style="background:var(--grey)"></i>Pérdidas de transición</span></div></div>
+      <div class="card"><h3>Flujo acumulado del comprador</h3><p class="sub">USD M, incluye el stock, sin valor terminal.</p><div id="c-j"></div></div>
+      <div class="card span2"><h3>EBITDA proyectado</h3><p class="sub">USD M. Hoy (abr–ago 26 anualizado) contra los cinco años del plan del escenario elegido.</p><div id="c-eb"></div></div>
+    </div>
+    <div class="concl"><b>Conclusión.</b> El comprador pone USD 9.8 M en el caso base, pero 6.0 son stock que se recupera. Los 3.8 restantes (indemnizaciones, litigios y transición) vuelven en unos 2.8 años. En el caso base la rentabilidad apenas iguala el costo del capital (TIR 20% = WACC): no hay margen para pagar un precio.</div>
+  </section>
+
+  <section class="ch" id="oferta">
+    <div class="chhead"><span class="chnum">3 · OFERTA</span><h2>USD 1 por el 100%: el capital vale menos que cero</h2></div>
+    <div class="grid2">
+      <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+        <div class="offer"><span class="amt">USD 1</span><p>por el 100% de las acciones, con la deuda financiera (USD 2.6 M) saneada por el vendedor antes del cierre</p></div>
+        <div class="card"><h3>Compromisos que asume el comprador</h3><p class="sub">USD M. La columna del escenario elegido, resaltada.</p>
+          <div class="tablebox"><table id="t-comp"><thead><tr><th>Concepto</th><th data-c="0">Conserv.</th><th data-c="1">Base</th><th data-c="2">Optim.</th></tr></thead>
+          <tbody>
+            <tr><td>Indemnizaciones (50 personas)</td><td data-c="0">−2.62</td><td data-c="1">−2.10</td><td data-c="2">−0.50</td></tr>
+            <tr><td>Litigios judiciales</td><td data-c="0">−1.02</td><td data-c="1">−1.02</td><td data-c="2">−1.02</td></tr>
+            <tr><td>Reclamos extrajudiciales</td><td data-c="0">−0.18</td><td data-c="1">−0.18</td><td data-c="2">−0.18</td></tr>
+            <tr><td>Compra de stock 0km</td><td data-c="0">−6.00</td><td data-c="1">−6.00</td><td data-c="2">−6.00</td></tr>
+            <tr class="tot"><td>Desembolso total</td><td data-c="0">−9.82</td><td data-c="1">−9.30</td><td data-c="2">−7.70</td></tr>
+          </tbody></table></div>
+          <div class="chips"><div class="chip">Completion accounts: la pérdida hasta el cierre es del vendedor</div><div class="chip">Indemnidad del vendedor por pasivos no declarados</div><div class="chip">Renovación de la concesión y floor plan para el stock</div><div class="chip">Earn-out opcional de hasta USD 0.50 M</div></div>
+        </div>
+      </div>
+      <div class="card"><h3>Del NAV al valor para el comprador</h3><p class="sub" id="wf-sub">USD M, escenario base. Verde suma, rojo resta.</p><div id="c-wf"></div></div>
+      <div class="card"><h3>Valor de las acciones por método</h3><p class="sub">USD M. Barra = rango conservador–optimista; punto = caso base; línea roja = oferta.</p><div id="c-meth"></div></div>
+      <div class="card"><h3>Lo que le cuesta cada alternativa al vendedor</h3><p class="sub">USD M, horizonte 12 meses. Cerrar supone ~110 personas a indemnizar (supuesto).</p><div id="c-alt"></div>
+        <div class="legend"><span><i style="background:var(--red)"></i>Pérdidas</span><span><i style="background:#D9534F"></i>Indemnizaciones</span><span><i style="background:var(--amber)"></i>Litigios</span><span><i style="background:var(--navy)"></i>Stock nuevo</span><span><i style="background:var(--grey)"></i>Quitas en liquidación</span><span><i style="background:#7FA7D9"></i>Saneamiento de deuda</span></div></div>
+      <div class="card span2"><h3>Zona de acuerdo</h3><p class="sub">Precio por el 100% de las acciones, USD M. El margen de negociación está por debajo de cero.</p><div id="c-zopa"></div></div>
+    </div>
+    <div class="concl"><b>Conclusión.</b> Con indemnizaciones y litigios a cargo del comprador, el capital vale entre USD −3.63 y −0.40 M. Por eso la oferta es USD 1, con la deuda financiera saneada por Toyota. Para el vendedor es la salida más barata: cerrar la empresa le costaría unos USD 7 M.</div>
+  </section>
+  <footer>Fuentes: balances auditados FY2022–FY2026; libros de gestión mensuales de TTCA (abr-22 a ago-26, pesos nominales, TC oficial); modelo ADQUISICION_TTCA. Indemnizaciones, litigios y compra de stock: montos informados por la parte compradora. Proyecciones y dotación: supuestos propios a validar. Borrador para discusión.</footer>
+</main>
+
+<script>
+const D={"ttm":[["mar-23",67.5,3.36],["abr-23",70.4,3.67],["may-23",70.9,3.67],["jun-23",72.0,3.72],["jul-23",72.6,3.93],["ago-23",73.1,4.12],["sep-23",72.1,4.39],["oct-23",71.8,4.84],["nov-23",70.2,4.77],["dic-23",66.8,4.58],["ene-24",64.8,4.65],["feb-24",65.7,5.02],["mar-24",64.0,5.35],["abr-24",60.8,4.59],["may-24",60.4,4.24],["jun-24",58.2,3.75],["jul-24",58.3,3.23],["ago-24",60.4,2.89],["sep-24",64.9,3.03],["oct-24",66.2,2.32],["nov-24",65.2,1.93],["dic-24",67.8,1.92],["ene-25",69.6,1.23],["feb-25",71.6,0.78],["mar-25",74.1,0.62],["abr-25",75.3,0.79],["may-25",74.2,0.77],["jun-25",75.2,0.76],["jul-25",74.5,0.58],["ago-25",72.4,0.2],["sep-25",68.8,-0.06],["oct-25",66.1,-0.02],["nov-25",63.7,-0.27],["dic-25",61.6,-0.38],["ene-26",59.2,-0.22],["feb-26",55.3,-0.39],["mar-26",53.6,-0.72],["abr-26",50.3,-1.1],["may-26",48.1,-1.31],["jun-26",44.7,-1.49],["jul-26",41.1,-1.52],["ago-26",39.6,-1.36]],"mon":[["abr-22",1.35,1.66,6.7],["may-22",1.36,1.74,5.8],["jun-22",1.4,1.58,7.5],["jul-22",1.47,1.38,6.2],["ago-22",1.55,1.21,6.2],["sep-22",1.67,1.05,-3.4],["oct-22",1.66,1.1,4.1],["nov-22",1.75,0.99,5.8],["dic-22",1.59,1.26,3.9],["ene-23",1.71,1.05,7.0],["feb-23",1.76,0.98,4.1],["mar-23",1.4,1.91,1.5],["abr-23",1.77,1.04,7.9],["may-23",1.5,1.4,5.4],["jun-23",1.78,0.92,7.0],["jul-23",1.83,0.88,8.8],["ago-23",2.03,0.75,9.5],["sep-23",1.86,0.87,3.9],["oct-23",1.8,0.97,11.7],["nov-23",1.86,1.13,6.0],["dic-23",1.58,1.54,1.8],["ene-24",1.62,1.6,13.4],["feb-24",1.67,1.49,11.3],["mar-24",1.47,1.88,17.8],["abr-24",1.5,1.72,0.2],["may-24",1.54,1.5,0.4],["jun-24",1.42,1.69,0.5],["jul-24",1.44,1.65,1.2],["ago-24",1.51,1.41,1.8],["sep-24",1.44,1.34,3.4],["oct-24",1.36,1.52,0.0],["nov-24",1.43,1.33,0.1],["dic-24",1.29,1.75,0.6],["ene-25",1.22,1.98,-4.9],["feb-25",1.24,1.83,0.9],["mar-25",1.28,1.85,4.8],["abr-25",1.3,1.8,2.4],["may-25",1.26,1.9,0.1],["jun-25",1.2,2.18,0.2],["jul-25",1.2,2.16,-1.5],["ago-25",1.15,2.46,-5.2],["sep-25",1.1,2.61,0.2],["oct-25",1.35,2.44,0.9],["nov-25",1.3,2.86,-8.0],["dic-25",1.32,2.71,-2.7],["ene-26",1.26,2.97,-3.3],["feb-26",1.24,3.05,-4.5],["mar-26",1.12,3.38,-3.2],["abr-26",1.08,3.8,-4.5],["may-26",1.05,3.87,-6.2],["jun-26",1.03,4.11,-6.0],["jul-26",1.0,4.52,-4.5],["ago-26",0.98,4.76,-3.0]],"ed":[["mar-23",4.09,0.16],["mar-24",3.79,1.46],["mar-25",4.02,1.53],["ago-25",3.05,2.07],["mar-26",2.39,4.27],["ago-26",1.43,4.13]],"sc":{"Conservador":{"cum":[-9.41,-10.31,-10.76,-10.4,-9.94,-9.4],"ebitda":[0.19,0.61,0.82,0.92,1.03],"sales":[44,48,50,51,52],"irr":-12,"inv0":9.41},"Base":{"cum":[-8.6,-8.28,-7.18,-5.7,-4.04,-2.27],"ebitda":[1.56,2.25,2.59,2.82,2.94],"sales":[48,54,57,59,60],"irr":20,"inv0":8.6},"Optimista":{"cum":[-6.8,-5.33,-2.68,-0.1,2.73,5.72],"ebitda":[2.87,3.87,4.37,4.62,4.87],"sales":[52,60,64,66,68],"irr":50,"inv0":6.8}}};
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const NS='http://www.w3.org/2000/svg';
+const fmt=(v,d=2)=>{const s=Math.abs(v).toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g,',');return (v<0?'−':'')+s};
+function el(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function txt(p,x,y,s,a={}){const e=el('text',Object.assign({x,y},a),p);e.textContent=s;return e}
+function tip(e,s){el('title',{},e).textContent=s}
+function svg(id,w,h,label){const host=document.getElementById(id);host.innerHTML='';const s=el('svg',{viewBox:`0 0 ${w} ${h}`,role:'img','aria-label':label},host);return s}
+function scale(d0,d1,r0,r1){return v=>r0+(v-d0)/(d1-d0)*(r1-r0)}
+function yaxis(s,y,ticks,x0,x1,f=v=>v){ticks.forEach(t=>{el('line',{x1:x0,x2:x1,y1:y(t),y2:y(t),stroke:'var(--grid)'},s);txt(s,x0-6,y(t)+4,f(t),{'text-anchor':'end'})})}
+
+function drawTTM(){
+  const W=1180,H=380,L=56,R=70,T=16,mid=230,B=352,s=svg('c-ttm',W,H,'Ventas a 12 meses y resultado neto a 12 meses');
+  const n=D.ttm.length,x=i=>L+i*(W-L-R)/(n-1);
+  const y=scale(0,85,mid-14,T);yaxis(s,y,[0,20,40,60,80],L,W-R);
+  let p='';D.ttm.forEach((r,i)=>p+=(i?'L':'M')+x(i)+','+y(r[1]));el('path',{d:p,fill:'none',stroke:'var(--navy)','stroke-width':3},s);
+  let pk=0;D.ttm.forEach((r,i)=>{if(r[1]>D.ttm[pk][1])pk=i});
+  D.ttm.forEach((r,i)=>{const c=el('circle',{cx:x(i),cy:y(r[1]),r:9,fill:'transparent'},s);tip(c,`${r[0]}: ventas 12m USD ${fmt(r[1],1)} M`)});
+  el('circle',{cx:x(pk),cy:y(D.ttm[pk][1]),r:5,fill:'var(--navy)'},s);txt(s,x(pk),y(D.ttm[pk][1])-10,`Pico ${fmt(D.ttm[pk][1],1)} (${D.ttm[pk][0]})`,{'text-anchor':'middle',class:'lbl'});
+  const last=D.ttm[n-1];el('circle',{cx:x(n-1),cy:y(last[1]),r:5,fill:'var(--red)'},s);txt(s,x(n-1)+8,y(last[1])+4,`${fmt(last[1],1)} · −47%`,{class:'lbl',fill:'var(--red)',style:'fill:var(--red)'});
+  const yb=scale(-2,6,B,mid+8);yaxis(s,yb,[-2,0,2,4,6],L,W-R);
+  const bw=(W-L-R)/n*0.7;
+  D.ttm.forEach((r,i)=>{const v=r[2];const b=el('rect',{x:x(i)-bw/2,y:v>=0?yb(v):yb(0),width:bw,height:Math.abs(yb(v)-yb(0)),fill:v>=0?'var(--green)':'var(--red)',opacity:.8,rx:1.5},s);tip(b,`${r[0]}: resultado neto 12m USD ${fmt(v)} M`)});
+  txt(s,x(n-1)+8,yb(last[2])+4,fmt(last[2]),{class:'lbl',style:'fill:var(--red)'});
+  [0,6,12,18,24,30,36,n-1].forEach(i=>txt(s,x(i),H-4,D.ttm[i][0],{'text-anchor':'middle'}));
+  txt(s,W-R+8,y(80)+4,'Ventas',{style:'font-weight:700'});txt(s,W-R+8,yb(5)+4,'Resultado',{style:'font-weight:700'});
+}
+function drawTij(){
+  const yrs=['Ej. mar-23','Ej. mar-24','Ej. mar-25','Ej. mar-26','Abr–ago 26'],gm=[22.2,28.1,16.5,19.7,20.2],sg=[16.2,17.8,16.3,19.7,22.5];
+  const W=560,H=280,L=40,R=24,T=24,B=250,s=svg('c-tij',W,H,'Margen bruto contra gastos de estructura');
+  const x=i=>L+i*(W-L-R)/4,y=scale(10,32,B,T);yaxis(s,y,[10,15,20,25,30],L,W-R,v=>v+'%');
+  [[gm,'var(--navy)','Margen bruto'],[sg,'var(--red)','Gastos']].forEach(([a,c,nm])=>{let p='';a.forEach((v,i)=>p+=(i?'L':'M')+x(i)+','+y(v));el('path',{d:p,fill:'none',stroke:c,'stroke-width':3},s);
+    a.forEach((v,i)=>{const k=el('circle',{cx:x(i),cy:y(v),r:4.5,fill:c},s);tip(k,`${yrs[i]}: ${nm} ${fmt(v,1)}%`)})});
+  gm.forEach((g,i)=>{const d=g-sg[i];txt(s,x(i),y(Math.max(g,sg[i]))-10,(d>=0?'+':'−')+fmt(Math.abs(d),1)+' pp',{'text-anchor':'middle',class:'lbl',style:`fill:${d>=0?'var(--green)':'var(--red)'}`})});
+  yrs.forEach((t,i)=>txt(s,x(i),H-6,t,{'text-anchor':'middle'}));
+}
+function drawED(){
+  const W=560,H=280,L=36,R=10,T=20,B=250,s=svg('c-ed',W,H,'Patrimonio neto contra deuda financiera');
+  const n=D.ed.length,gw=(W-L-R)/n,bw=gw*0.32,y=scale(0,5,B,T);yaxis(s,y,[0,1,2,3,4,5],L,W-R);
+  D.ed.forEach((r,i)=>{const cx=L+gw*(i+.5);[[r[1],'var(--grey)',-1,'Patrimonio'],[r[2],'var(--red)',1,'Deuda']].forEach(([v,c,o,nm])=>{const bx=cx+(o<0?-bw-2:2);const b=el('rect',{x:bx,y:y(v),width:bw,height:B-y(v),fill:c,rx:3},s);tip(b,`${r[0]}: ${nm} USD ${fmt(v)} M`);txt(s,bx+bw/2,y(v)-5,fmt(v),{'text-anchor':'middle',class:'lbl',style:'font-size:11px'})});txt(s,cx,H-6,r[0],{'text-anchor':'middle'})});
+}
+function spark(id,idx,ref,fmtd,label){
+  const W=360,H=150,L=34,R=44,T=12,B=128,s=svg(id,W,H,label);
+  const v=D.mon.map(r=>r[idx]),mn=Math.min(...v,ref??Infinity),mx=Math.max(...v,ref??-Infinity),pad=(mx-mn)*.08;
+  const x=i=>L+i*(W-L-R)/(v.length-1),y=scale(mn-pad,mx+pad,B,T);
+  const tk=[mn-pad,(mn+mx)/2,mx+pad].map(t=>+t.toFixed(1));yaxis(s,y,tk,L,W-R);
+  if(ref!==null)el('line',{x1:L,x2:W-R,y1:y(ref),y2:y(ref),stroke:'var(--muted)','stroke-dasharray':'4 4'},s);
+  let p='';v.forEach((a,i)=>p+=(i?'L':'M')+x(i)+','+y(a));el('path',{d:p,fill:'none',stroke:'var(--grey)','stroke-width':1.6},s);
+  let q='';v.slice(-6).forEach((a,j)=>{const i=v.length-6+j;q+=(j?'L':'M')+x(i)+','+y(a)});el('path',{d:q,fill:'none',stroke:'var(--red)','stroke-width':3},s);
+  v.forEach((a,i)=>{const c=el('circle',{cx:x(i),cy:y(a),r:5,fill:'transparent'},s);tip(c,`${D.mon[i][0]}: ${fmtd(a)}`)});
+  el('circle',{cx:x(v.length-1),cy:y(v[v.length-1]),r:4,fill:'var(--red)'},s);txt(s,x(v.length-1)+6,y(v[v.length-1])+4,fmtd(v[v.length-1]),{class:'lbl',style:'fill:var(--red)'});
+  [[0,'abr-22'],[24,'abr-24'],[v.length-1,'ago-26']].forEach(([i,t])=>txt(s,x(i),H-2,t,{'text-anchor':'middle'}));
+}
+const SC={Conservador:{ind:2.615,tr:.8,nav:-.10,rev:.29,val:-3.63,pb:'no en 5 años',pbs:'total: no en 5 años',npv:-7.97,col:0},
+          Base:{ind:2.10,tr:.5,nav:.83,rev:.11,val:-2.36,pb:'2.8 años',pbs:'total con stock ~6.3 años',npv:.11,col:1},
+          Optimista:{ind:.499,tr:.3,nav:1.30,rev:0,val:-.40,pb:'0.5 años',pbs:'total con stock 3.0 años',npv:9.12,col:2}};
+const LIT=1.201,STK=6;let cur='Base';
+function drawInv(){
+  const W=560,H=250,L=96,R=50,T=10,s=svg('c-inv',W,H,'Capital del comprador por escenario');
+  const x=scale(0,12,L,W-R),rows=['Conservador','Base','Optimista'],bh=44;
+  [0,2,4,6,8,10,12].forEach(t=>{el('line',{x1:x(t),x2:x(t),y1:T,y2:T+3*70,stroke:'var(--grid)'},s);txt(s,x(t),H-6,t,{'text-anchor':'middle'})});
+  rows.forEach((k,i)=>{const p=SC[k],y=T+i*70+12;let a=0;const op=k===cur?1:.35;
+    [[STK,'var(--navy)','Stock'],[p.ind,'var(--red)','Indemnizaciones'],[LIT,'var(--amber)','Litigios'],[p.tr,'var(--grey)','Transición']].forEach(([v,c,nm])=>{const r=el('rect',{x:x(a),y,width:x(a+v)-x(a),height:bh,fill:c,opacity:op,stroke:'var(--surface)','stroke-width':2},s);tip(r,`${k} · ${nm}: USD ${fmt(v)} M`);if(v>.6)txt(s,(x(a)+x(a+v))/2,y+bh/2+5,fmt(v,1),{'text-anchor':'middle',style:'fill:#FFFFFF;font-weight:700;font-size:13px'});a+=v});
+    txt(s,x(a)+6,y+bh/2+5,fmt(a,1),{class:'lbl',style:'font-size:15px'});txt(s,L-8,y+bh/2+5,k,{'text-anchor':'end',style:k===cur?'font-weight:700;fill:var(--ink)':''})});
+}
+function drawJ(){
+  const W=560,H=250,L=40,R=46,T=12,B=222,s=svg('c-j',W,H,'Flujo acumulado del comprador');
+  const x=i=>L+i*(W-L-R)/5,y=scale(-12,8,B,T);yaxis(s,y,[-12,-8,-4,0,4,8],L,W-R);
+  el('line',{x1:L,x2:W-R,y1:y(0),y2:y(0),stroke:'var(--muted)'},s);
+  const col={Conservador:'var(--grey)',Base:'var(--navy)',Optimista:'var(--green)'};
+  Object.keys(SC).forEach(k=>{const c=D.sc[k].cum;let p='';c.forEach((v,i)=>p+=(i?'L':'M')+x(i)+','+y(v));el('path',{d:p,fill:'none',stroke:col[k],'stroke-width':k===cur?3.5:1.8,opacity:k===cur?1:.55},s);
+    c.forEach((v,i)=>{const m=el('circle',{cx:x(i),cy:y(v),r:k===cur?4.5:3,fill:col[k],opacity:k===cur?1:.55},s);tip(m,`${k} · ${['Cierre','Año 1','Año 2','Año 3','Año 4','Año 5'][i]}: USD ${fmt(v)} M`)});
+    txt(s,x(5)+6,y(c[5])+4,fmt(c[5],1),{style:`fill:${col[k]};font-weight:700`})});
+  ['Cierre','Año 1','Año 2','Año 3','Año 4','Año 5'].forEach((t,i)=>txt(s,x(i),H-4,t,{'text-anchor':'middle'}));
+}
+function drawEB(){
+  const W=1180,H=230,L=40,R=20,T=14,B=200,s=svg('c-eb',W,H,'EBITDA proyectado');
+  const e=[-0.35].concat(D.sc[cur].ebitda),lab=['Hoy'].concat(['Año 1','Año 2','Año 3','Año 4','Año 5']);
+  const y=scale(-1,5.5,B,T);yaxis(s,y,[-1,0,1,2,3,4,5],L,W-R);
+  const gw=(W-L-R)/6,bw=gw*.5;
+  e.forEach((v,i)=>{const cx=L+gw*(i+.5);const r=el('rect',{x:cx-bw/2,y:v>=0?y(v):y(0),width:bw,height:Math.abs(y(v)-y(0)),fill:i===0?'var(--red)':'var(--navy)',rx:3},s);tip(r,`${lab[i]}: EBITDA USD ${fmt(v)} M`);
+    txt(s,cx,v>=0?y(v)-6:y(v)+16,fmt(v),{'text-anchor':'middle',class:'lbl'});txt(s,cx,H-6,lab[i]+(i?` · ventas ${D.sc[cur].sales[i-1]}`:' (abr–ago 26 anual.)'),{'text-anchor':'middle'})});
+  el('line',{x1:L,x2:W-R,y1:y(0),y2:y(0),stroke:'var(--muted)'},s);
+}
+function drawWF(){
+  const p=SC[cur],steps=[['NAV mar-26',{Conservador:.69,Base:1.62,Optimista:2.09}[cur],'t'],['Pérdida abr–ago',-.79,'d'],['NAV ago-26',p.nav,'t'],['Reversión contingencia',p.rev,'d'],['Litigios',-LIT,'d'],['Indemnizaciones',-p.ind,'d'],['Valor para el comprador',p.val,'t']];
+  const W=560,H=320,L=36,R=10,T=20,B=260,s=svg('c-wf',W,H,'Puente del NAV al valor para el comprador');
+  const y=scale(-4,2.5,B,T);yaxis(s,y,[-4,-3,-2,-1,0,1,2],L,W-R);
+  const gw=(W-L-R)/steps.length,bw=gw*.66;let run=0;
+  steps.forEach(([n,v,k],i)=>{const cx=L+gw*(i+.5);let y0,y1,c;
+    if(k==='t'){y0=0;y1=v;run=v;c=v>=0?'var(--navy)':'var(--red)'}else{y0=run;y1=run+v;run=y1;c=v>=0?'var(--green)':'var(--red)'}
+    const r=el('rect',{x:cx-bw/2,y:y(Math.max(y0,y1)),width:bw,height:Math.max(1,Math.abs(y(y0)-y(y1))),fill:c,opacity:k==='t'?1:.55,rx:2},s);tip(r,`${n}: ${fmt(v)}`);
+    txt(s,cx,y(Math.max(y0,y1))-6,(k==='d'&&v>0?'+':'')+fmt(v),{'text-anchor':'middle',class:'lbl',style:'font-size:12.5px'});
+    n.split(' ').reduce((a,w)=>{const L2=a[a.length-1];if((L2+' '+w).trim().length<=11)a[a.length-1]=(L2+' '+w).trim();else a.push(w);return a},['']).forEach((ln,j)=>txt(s,cx,B+18+j*13,ln,{'text-anchor':'middle',style:'font-size:11.5px'}))});
+  el('line',{x1:L,x2:W-R,y1:y(0),y2:y(0),stroke:'var(--muted)'},s);
+  document.getElementById('wf-sub').textContent=`USD M, escenario ${cur.toLowerCase()}. Verde suma, rojo resta.`;
+}
+function drawMeth(){
+  const W=560,H=260,L=150,R=20,T=24,s=svg('c-meth',W,H,'Valor de las acciones por método');
+  const rows=[['NAV ago-26 (antes de compromisos)',-.10,.83,1.30],['Valor para el comprador',-3.63,-2.36,-.40],['Múltiplo EBITDA menos deuda',-2.62,-.55,.64],['DCF menos deuda',-11.5,-1.72,6.72]];
+  const x=scale(-12,8,L,W-R);[-12,-8,-4,0,4,8].forEach(t=>{el('line',{x1:x(t),x2:x(t),y1:T,y2:H-28,stroke:'var(--grid)'},s);txt(s,x(t),H-10,t,{'text-anchor':'middle'})});
+  rows.forEach(([n,lo,mid,hi],i)=>{const yy=T+20+i*52;el('line',{x1:x(lo),x2:x(hi),y1:yy,y2:yy,stroke:'var(--grey)','stroke-width':10,'stroke-linecap':'round',opacity:.6},s);
+    const c=el('circle',{cx:x(mid),cy:yy,r:6,fill:'var(--navy)'},s);tip(c,`${n}: base ${fmt(mid)} (rango ${fmt(lo)} a ${fmt(hi)})`);
+    txt(s,x(mid),yy-12,fmt(mid),{'text-anchor':'middle',class:'lbl'});
+    n.split(' ').reduce((a,w)=>{const L2=a[a.length-1];if((L2+' '+w).trim().length<=22)a[a.length-1]=(L2+' '+w).trim();else a.push(w);return a},['']).forEach((ln,j,arr)=>txt(s,L-10,yy+4+(j-(arr.length-1)/2)*14,ln,{'text-anchor':'end'}))});
+  el('line',{x1:x(0),x2:x(0),y1:T-8,y2:H-28,stroke:'var(--red)','stroke-width':2},s);txt(s,x(0)+4,T-10,'Oferta USD 1',{style:'fill:var(--red);font-weight:700'});
+}
+function drawAlt(){
+  const W=560,H=280,L=34,R=10,T=20,B=232,s=svg('c-alt',W,H,'Costo de cada alternativa para el vendedor');
+  const alts=['Mantener 12 meses','Reestructurar solo','Cerrar y liquidar','Vender a USD 1'];
+  const comp=[['Pérdidas','var(--red)',[1.9,.5,0,0]],['Indemnizaciones','#D9534F',[0,2.1,4.6,0]],['Litigios','var(--amber)',[0,1.2,1.2,0]],['Stock nuevo','var(--navy)',[0,6,0,0]],['Quitas','var(--grey)',[0,0,1.2,0]],['Deuda','#7FA7D9',[0,0,0,2.62]]];
+  const y=scale(0,11,B,T);yaxis(s,y,[0,2,4,6,8,10],L,W-R);const gw=(W-L-R)/4,bw=gw*.55;
+  alts.forEach((a,i)=>{const cx=L+gw*(i+.5);let acc=0;comp.forEach(([n,c,v])=>{if(!v[i])return;const r=el('rect',{x:cx-bw/2,y:y(acc+v[i]),width:bw,height:y(acc)-y(acc+v[i]),fill:c,stroke:'var(--surface)','stroke-width':1.5},s);tip(r,`${a} · ${n}: USD ${fmt(v[i],1)} M`);acc+=v[i]});
+    txt(s,cx,y(acc)-7,fmt(acc,1),{'text-anchor':'middle',class:'lbl',style:'font-size:15px'});
+    a.split(' ').reduce((q,w)=>{const L2=q[q.length-1];if((L2+' '+w).trim().length<=13)q[q.length-1]=(L2+' '+w).trim();else q.push(w);return q},['']).forEach((ln,j)=>txt(s,cx,B+18+j*14,ln,{'text-anchor':'middle'}))});
+}
+function drawZopa(){
+  const W=1180,H=150,L=40,R=40,s=svg('c-zopa',W,H,'Zona de acuerdo de precio');
+  const x=scale(-5,1,L,W-R),yy=70;
+  [-5,-4,-3,-2,-1,0,1].forEach(t=>txt(s,x(t),H-6,t,{'text-anchor':'middle'}));
+  el('rect',{x:x(-4.4),y:yy-12,width:x(0)-x(-4.4),height:24,fill:'var(--green)',opacity:.3,rx:4},s);
+  el('rect',{x:x(0),y:yy-12,width:x(.5)-x(0),height:24,fill:'var(--grey)',opacity:.45,rx:4},s);
+  [[-4.4,'Reserva del vendedor ≈ −4.4 (cerrar − vender)','var(--red)',yy+38],[-2.36,'Valor para el comprador −2.36','var(--navy-ink)',yy-26],[0,'Oferta USD 1','var(--navy-ink)',yy-26],[.5,'Máx. con earn-out 0.50','var(--amber)',yy+38]].forEach(([v,t,c,ty])=>{el('line',{x1:x(v),x2:x(v),y1:yy-18,y2:yy+18,stroke:c,'stroke-width':3},s);txt(s,x(v),ty,t,{'text-anchor':v<-4?'start':(v>0.4?'end':'middle'),style:`fill:${c};font-weight:700;font-size:13.5px`})});
+}
+function setScenario(k){cur=k;const p=SC[k];
+  document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.sc===k));
+  const tot=STK+p.ind+LIT+p.tr,sunk=p.ind+LIT+p.tr;
+  document.getElementById('k-tot').textContent=fmt(-tot);document.getElementById('k-sunk').textContent=fmt(-sunk);
+  document.getElementById('k-sunk-s').textContent=`indemn. ${fmt(p.ind)} + litig. ${fmt(LIT)} + trans. ${fmt(p.tr,1)}`;
+  const pb=document.getElementById('k-pb');pb.textContent=p.pb;pb.className='v '+(k==='Conservador'?'neg':'pos');document.getElementById('k-pb-s').textContent=p.pbs;
+  const irr=D.sc[k].irr,ie=document.getElementById('k-irr');ie.textContent=(irr<0?'−':'')+Math.abs(irr)+'%';ie.className='v '+(irr<20?'neg':(irr>20?'pos':'nav'));
+  const ne=document.getElementById('k-npv');ne.textContent=(p.npv>=0?'+':'')+fmt(p.npv);ne.className='v '+(p.npv<0?'neg':(p.npv<1?'nav':'pos'));
+  document.getElementById('h-val').textContent=fmt(p.val);document.getElementById('h-inv').textContent=fmt(-tot);
+  document.querySelectorAll('#t-comp [data-c]').forEach(c=>c.classList.toggle('hl',+c.dataset.c===p.col));
+  drawInv();drawJ();drawEB();drawWF();
+  try{localStorage.setItem('ttca-sc',k)}catch(e){}
+}
+document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>setScenario(b.dataset.sc)));
+drawTTM();drawTij();drawED();
+spark('r-liq',1,1,v=>fmt(v),'Liquidez corriente mensual');spark('r-end',2,null,v=>fmt(v)+'x','Pasivo sobre patrimonio mensual');spark('r-mn',3,0,v=>fmt(v,1)+'%','Margen neto mensual');
+drawMeth();drawAlt();drawZopa();
+let start='Base';try{const s=localStorage.getItem('ttca-sc');if(s&&SC[s])start=s}catch(e){}
+setScenario(start);
+</script>
+
+</body>
+</html>
